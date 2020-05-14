@@ -1,6 +1,7 @@
-from flask import Flask
-import os
+from flask import Flask, url_for, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from wtforms import ValidationError
+import os
 
 # variables and application instance
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +18,21 @@ class Category(db.Model):
     # helper to add category function to foodItems and foodItems function to category, to make lookup easier
     foodItems = db.relationship('FoodItem', backref = 'category') 
 
+    def to_json(self):
+        json_category = {
+            'url': url_for('category', id = self.id),
+            'name': self.name,
+            # how to get food items? +++ TODO
+            }
+        return json_category
+
+    @staticmethod
+    def from_json(json_post):
+        name = json_post('name')
+        if name is None or name == '':
+            raise ValidationError('Item does not have a name')
+        return Category(name=name)
+
 class FoodItem(db.Model):
     __tablename__ = 'foodItems'
     id = db.Column(db.Integer, primary_key=True)
@@ -27,6 +43,25 @@ class FoodItem(db.Model):
     isApprovedItem = db.Column(db.Boolean)
     isApprovedData = db.Column(db.Boolean)
 
+    def to_json(self):
+        json_fooditem = {
+            'url': url_for('foodItem', id = self.id),
+            'name': self.name,
+            'isVegan': self.isVegan,
+            'caveats': self.caveats,
+            'categoryId': self.categoryId, # how to get category name? +++ TODO
+            'isApprovedItem': self.isApprovedItem,
+            'isApprovedData': self.isApprovedData
+        }
+        return json_fooditem
+
+    @staticmethod
+    def from_json(json_post):
+        name = json_post('name')
+        if name is None or name == '':
+            raise ValidationError('Item does not have a name')
+        return FoodItem(name=name)
+
 #db.create_all() 
 
 
@@ -34,6 +69,47 @@ class FoodItem(db.Model):
 @app.route('/')
 def index():
     return '<h1>Hello World</h1>'
+
+#create
+@app.route('/category/', methods = ['POST'])
+def new_category():
+    category = Category.from_json(request.json)
+    db.session.add(category)
+    db.session.commit()
+    return jsonify(category.to_json())
+
+#read
+@app.route('/category/')
+def get_categories():
+    categories = Category.query.all()
+    return jsonify({ 'categories': [category.to_json() for category in categories] })
+
+#read
+@app.route('/category/<int:id>')
+def get_category(id):
+    category = Category.query.get_or_404(id)
+    return jsonify(category.to_json())
+
+#create
+@app.route('/foodItem/', methods = ['POST'])
+def new_foodItem():
+    foodItem = FoodItem.from_json(request.json)
+    db.session.add(foodItem)
+    db.session.commit()
+    return jsonify(foodItem.to_json())
+
+#read
+@app.route('/foodItem/', methods = ['GET'])
+def get_foodItems():
+    foodItems = FoodItem.query.all()
+    return jsonify({ 'foodItems': [foodItem.to_json() for foodItem in foodItems] })
+
+#read
+@app.route('/foodItem/<int:id>')
+def get_foodItem(id):
+    foodItem = FoodItem.query.get_or_404(id)
+    return jsonify(foodItem.to_json())
+
 
 # run app
 if __name__ == '__main__':
