@@ -79,13 +79,13 @@ def new_category():
     return jsonify(category.to_json())
 
 #read
-@app.route('/category/')
+@app.route('/category/', methods = ['GET'])
 def get_categories():
     categories = Category.query.all()
     return jsonify({ 'categories': [category.to_json() for category in categories] })
 
 #read
-@app.route('/category/<int:id>')
+@app.route('/category/<int:id>', methods = ['GET'])
 def get_category(id):
     category = Category.query.get_or_404(id)
     return jsonify(category.to_json())
@@ -105,7 +105,7 @@ def get_foodItems():
     return jsonify({ 'foodItems': [foodItem.to_json() for foodItem in foodItems] })
 
 #read
-@app.route('/foodItem/<int:id>')
+@app.route('/foodItem/<int:id>', methods = ['GET'])
 def get_foodItem(id):
     foodItem = FoodItem.query.get_or_404(id)
     return jsonify(foodItem.to_json())
