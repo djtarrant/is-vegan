@@ -118,7 +118,7 @@ def remove_category(id:int):
     category = Category.query.filter_by(id=id).first()
     if category:
         db.session.delete(category)
-        db.session.commit
+        db.session.commit()
         return jsonify(message="You deleted the category"), 202
     else:
         return jsonify(message="The category doesn't exist"), 404
@@ -171,7 +171,7 @@ def remove_foodItem(id:int):
     foodItem = FoodItem.query.filter_by(id=id).first()
     if foodItem:
         db.session.delete(foodItem)
-        db.session.commit
+        db.session.commit()
         return jsonify(message="You deleted the food"), 202
     else:
         return jsonify(message="That food doesn't exist"), 404
