@@ -58,9 +58,14 @@ class FoodItem(db.Model):
     @staticmethod
     def from_json(json_post):
         name = json_post('name')
+        isVegan = json_post('isVegan')
+        caveats = json_post('caveats')
+        categoryId = json_post('categoryId') # how to get category name? +++ TODO
+        isApprovedItem = json_post('isApprovedItem')
+        isApprovedData = json_post('isApprovedData')
         if name is None or name == '':
             raise ValidationError('Item does not have a name')
-        return FoodItem(name=name)
+        return FoodItem(name=name, isVegan=isVegan, caveats=caveats, categoryId=categoryId, isApprovedItem=isApprovedItem, isApprovedData=isApprovedData)
 
 #db.create_all() 
 
@@ -68,8 +73,9 @@ class FoodItem(db.Model):
 # routes
 @app.route('/')
 def index():
-    return '<h1>Hello World</h1>'
+    return "<h1>Is Vegan API</h1><p>Endpoints:<ul><li>category</li><li>foodItem</li><li>isVegan</li></ul></p>"
 
+## CATEGORIES ##
 #create
 @app.route('/category/', methods = ['POST'])
 def new_category():
@@ -90,6 +96,22 @@ def get_category(id):
     category = Category.query.get_or_404(id)
     return jsonify(category.to_json())
 
+###+++ TODO
+#update
+@app.route('/category/<int:id>', methods = ['PUT'])
+def update_category(id):
+    #category = Category.query.get_or_404(id)
+    return jsonify(category.to_json())
+
+###+++ TODO
+#delete
+@app.route('/category/<int:id>', methods = ['DELETE'])
+def remove_category(id):
+    #category = Category.query.get_or_404(id)
+    return jsonify(category.to_json())
+
+
+## FOOD ITEMS ##
 #create
 @app.route('/foodItem/', methods = ['POST'])
 def new_foodItem():
@@ -110,6 +132,26 @@ def get_foodItem(id):
     foodItem = FoodItem.query.get_or_404(id)
     return jsonify(foodItem.to_json())
 
+###+++ TODO
+#update
+@app.route('/foodItem/<int:id>', methods = ['PUT'])
+def update_foodItem(id):
+    #foodItem = FoodItem.query.get_or_404(id)
+    return jsonify(foodItem.to_json())
+
+###+++ TODO
+#delete
+@app.route('/foodItem/<int:id>', methods = ['DELETE'])
+def remove_foodItem(id):
+    #foodItem = FoodItem.query.get_or_404(id)
+    return jsonify(foodItem.to_json())
+
+## IS VEGAN ##
+# read
+@app.route('/isVegan/<int:id>', methods = ['GET'])
+def isVegan(id):
+    foodItem = FoodItem.query.get_or_404(id)
+    return jsonify({ 'isVegan':foodItem.isVegan })
 
 # run app
 if __name__ == '__main__':
