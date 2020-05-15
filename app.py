@@ -103,13 +103,16 @@ def update_category(id):
     #category = Category.query.get_or_404(id)
     return jsonify(category.to_json())
 
-###+++ TODO
 #delete
 @app.route('/category/<int:id>', methods = ['DELETE'])
-def remove_category(id):
-    #category = Category.query.get_or_404(id)
-    return jsonify(category.to_json())
-
+def remove_category(id:int):
+    category = Category.query.filter_by(id=id).first()
+    if category:
+        db.session.delete(category)
+        db.session.commit
+        return jsonify(message="You deleted the category"), 202
+    else:
+        return jsonify(message="The category doesn't exist"), 404
 
 ## FOOD ITEMS ##
 #create
@@ -139,12 +142,16 @@ def update_foodItem(id):
     #foodItem = FoodItem.query.get_or_404(id)
     return jsonify(foodItem.to_json())
 
-###+++ TODO
 #delete
 @app.route('/foodItem/<int:id>', methods = ['DELETE'])
-def remove_foodItem(id):
-    #foodItem = FoodItem.query.get_or_404(id)
-    return jsonify(foodItem.to_json())
+def remove_foodItem(id:int):
+    foodItem = FoodItem.query.filter_by(id=id).first()
+    if foodItem:
+        db.session.delete(foodItem)
+        db.session.commit
+        return jsonify(message="You deleted the food"), 202
+    else:
+        return jsonify(message="That food doesn't exist"), 404
 
 ## IS VEGAN ##
 # read
