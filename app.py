@@ -79,29 +79,38 @@ def index():
 #create
 @app.route('/category/', methods = ['POST'])
 def new_category():
-    category = Category.from_json(request.json)
-    db.session.add(category)
-    db.session.commit()
-    return jsonify(category.to_json())
+    name = request.get('name')
+    category_test = Category.query.filter_by(name=name).first()
+    if category_test:
+       return jsonify(message="The category already exists"), 409
+    else:
+        category = Category.from_json(request.json)
+        db.session.add(category)
+        db.session.commit()
+        return jsonify(category.to_json()), 200
 
 #read
 @app.route('/category/', methods = ['GET'])
 def get_categories():
     categories = Category.query.all()
-    return jsonify({ 'categories': [category.to_json() for category in categories] })
+    return jsonify({ 'categories': [category.to_json() for category in categories] }), 200
 
 #read
 @app.route('/category/<int:id>', methods = ['GET'])
 def get_category(id):
     category = Category.query.get_or_404(id)
-    return jsonify(category.to_json())
+    return jsonify(category.to_json()), 200
 
-###+++ TODO
 #update
 @app.route('/category/<int:id>', methods = ['PUT'])
 def update_category(id):
-    #category = Category.query.get_or_404(id)
-    return jsonify(category.to_json())
+    category = Category.query.filter_by(id=id).first()
+    if category:
+        category.name = request.get('name')
+        db.session.commit()
+        return jsonify(message="The category was updated"), 202
+    else:
+        return jsonify(message="The category does not exist"), 404
 
 #delete
 @app.route('/category/<int:id>', methods = ['DELETE'])
@@ -118,22 +127,27 @@ def remove_category(id:int):
 #create
 @app.route('/foodItem/', methods = ['POST'])
 def new_foodItem():
-    foodItem = FoodItem.from_json(request.json)
-    db.session.add(foodItem)
-    db.session.commit()
-    return jsonify(foodItem.to_json())
+    name = request.get('name')
+    food_test = FoodItem.query.filter_by(name=name).first()
+    if food_test:
+       return jsonify(message="The food already exists"), 409
+    else:
+        foodItem = FoodItem.from_json(request.json)
+        db.session.add(foodItem)
+        db.session.commit()
+        return jsonify(foodItem.to_json()), 200
 
 #read
 @app.route('/foodItem/', methods = ['GET'])
 def get_foodItems():
     foodItems = FoodItem.query.all()
-    return jsonify({ 'foodItems': [foodItem.to_json() for foodItem in foodItems] })
+    return jsonify({ 'foodItems': [foodItem.to_json() for foodItem in foodItems] }), 200
 
 #read
 @app.route('/foodItem/<int:id>', methods = ['GET'])
 def get_foodItem(id):
     foodItem = FoodItem.query.get_or_404(id)
-    return jsonify(foodItem.to_json())
+    return jsonify(foodItem.to_json()), 200
 
 ###+++ TODO
 #update
@@ -158,7 +172,7 @@ def remove_foodItem(id:int):
 @app.route('/isVegan/<int:id>', methods = ['GET'])
 def isVegan(id):
     foodItem = FoodItem.query.get_or_404(id)
-    return jsonify({ 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats })
+    return jsonify({ 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats }), 200
 
 # run app
 if __name__ == '__main__':
