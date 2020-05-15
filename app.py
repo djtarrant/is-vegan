@@ -149,12 +149,21 @@ def get_foodItem(id):
     foodItem = FoodItem.query.get_or_404(id)
     return jsonify(foodItem.to_json()), 200
 
-###+++ TODO
 #update
 @app.route('/foodItem/<int:id>', methods = ['PUT'])
 def update_foodItem(id):
-    #foodItem = FoodItem.query.get_or_404(id)
-    return jsonify(foodItem.to_json())
+    foodItem = FoodItem.query.filter_by(id=id).first()
+    if foodItem:
+        foodItem.name = request.get('name')
+        foodItem.isVegan = request.get('isVegan')
+        foodItem.caveats = request.get('caveats')
+        foodItem.categoryId = request.get('categoryId') # how to get category name? +++ TODO
+        foodItem.isApprovedItem = request.get('isApprovedItem')
+        foodItem.isApprovedData = request.get('isApprovedData')
+        db.session.commit()
+        return jsonify(message="The food was updated"), 202
+    else:
+        return jsonify(message="The food does not exist"), 404
 
 #delete
 @app.route('/foodItem/<int:id>', methods = ['DELETE'])
