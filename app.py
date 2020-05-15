@@ -151,7 +151,7 @@ def remove_foodItem(id):
 @app.route('/isVegan/<int:id>', methods = ['GET'])
 def isVegan(id):
     foodItem = FoodItem.query.get_or_404(id)
-    return jsonify({ 'isVegan':foodItem.isVegan })
+    return jsonify({ 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats })
 
 # run app
 if __name__ == '__main__':
