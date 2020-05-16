@@ -30,7 +30,7 @@ class Category(db.Model):
     def from_json(json_post):
         name = json_post('name')
         if name is None or name == '':
-            raise ValidationError('Item does not have a name')
+            raise ValidationError('Category does not have a name')
         return Category(name=name)
 
 class FoodItem(db.Model):
