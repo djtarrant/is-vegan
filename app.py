@@ -45,7 +45,7 @@ class FoodItem(db.Model):
 
     def to_json(self):
         json_fooditem = {
-            'url': url_for('foodItem', id = self.id),
+            'url': url_for('get_foodItem', id = self.id),
             'name': self.name,
             'isVegan': self.isVegan,
             'caveats': self.caveats,
@@ -107,7 +107,8 @@ def get_category(id):
 def update_category(id):
     category = Category.query.filter_by(id=id).first()
     if category:
-        category.name = request.get('name')
+        content = request.json
+        category.name = content["name"]
         db.session.commit()
         return jsonify(message="The category was updated"), 202
     else:
@@ -128,12 +129,13 @@ def remove_category(id:int):
 #create
 @app.route('/foodItem/', methods = ['POST'])
 def new_foodItem():
-    name = request.get('name')
+    content = request.json
+    name = content["name"]
     food_test = FoodItem.query.filter_by(name=name).first()
     if food_test:
        return jsonify(message="The food already exists"), 409
     else:
-        foodItem = FoodItem.from_json(request.json)
+        foodItem = FoodItem.from_json(content)
         db.session.add(foodItem)
         db.session.commit()
         return jsonify(foodItem.to_json()), 200
@@ -155,12 +157,13 @@ def get_foodItem(id):
 def update_foodItem(id):
     foodItem = FoodItem.query.filter_by(id=id).first()
     if foodItem:
-        foodItem.name = request.get('name')
-        foodItem.isVegan = request.get('isVegan')
-        foodItem.caveats = request.get('caveats')
-        foodItem.categoryId = request.get('categoryId') # how to get category name? +++ TODO
-        foodItem.isApprovedItem = request.get('isApprovedItem')
-        foodItem.isApprovedData = request.get('isApprovedData')
+        content = request.json
+        foodItem.name = content["name"]
+        foodItem.isVegan = content["isVegan"]
+        foodItem.caveats = content["caveats"]
+        foodItem.categoryId = content["categoryId"] # how to get category name? +++ TODO
+        foodItem.isApprovedItem = content["isApprovedItem"]
+        foodItem.isApprovedData = content["isApprovedData"]
         db.session.commit()
         return jsonify(message="The food was updated"), 202
     else:
