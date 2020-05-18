@@ -57,12 +57,12 @@ class FoodItem(db.Model):
 
     @staticmethod
     def from_json(json_post):
-        name = json_post('name')
-        isVegan = json_post('isVegan')
-        caveats = json_post('caveats')
-        categoryId = json_post('categoryId') # how to get category name? +++ TODO
-        isApprovedItem = json_post('isApprovedItem')
-        isApprovedData = json_post('isApprovedData')
+        name = json_post['name']
+        isVegan = json_post['isVegan']
+        caveats = json_post['caveats']
+        categoryId = json_post['categoryId'] # how to get category name? +++ TODO
+        isApprovedItem = json_post['isApprovedItem']
+        isApprovedData = json_post['isApprovedData']
         if name is None or name == '':
             raise ValidationError('Item does not have a name')
         return FoodItem(name=name, isVegan=isVegan, caveats=caveats, categoryId=categoryId, isApprovedItem=isApprovedItem, isApprovedData=isApprovedData)
