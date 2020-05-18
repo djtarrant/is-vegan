@@ -20,7 +20,7 @@ class Category(db.Model):
 
     def to_json(self):
         json_category = {
-            'url': url_for('category', id = self.id),
+            'url': url_for('get_category', id = self.id),
             'name': self.name,
             # how to get food items? +++ TODO
             }
@@ -28,7 +28,7 @@ class Category(db.Model):
 
     @staticmethod
     def from_json(json_post):
-        name = json_post('name')
+        name = json_post['name']
         if name is None or name == '':
             raise ValidationError('Category does not have a name')
         return Category(name=name)
@@ -79,12 +79,13 @@ def index():
 #create
 @app.route('/category/', methods = ['POST'])
 def new_category():
-    name = request.get('name')
+    content = request.json
+    name = content["name"]
     category_test = Category.query.filter_by(name=name).first()
     if category_test:
        return jsonify(message="The category already exists"), 409
     else:
-        category = Category.from_json(request.json)
+        category = Category.from_json(content)
         db.session.add(category)
         db.session.commit()
         return jsonify(category.to_json()), 200
