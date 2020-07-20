@@ -1,11 +1,14 @@
 from flask import Flask, url_for, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import ValidationError
+from flask_cors import CORS, cross_origin
 import os
 
 # variables and application instance
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -73,7 +76,7 @@ class FoodItem(db.Model):
 # routes
 @app.route('/')
 def index():
-    return "<h1>Is Vegan API</h1><p>Endpoints:<ul><li>category</li><li>foodItem</li><li>isVegan</li></ul></p>"
+    return "<h1>Is Vegan API</h1><p>Endpoints:<ul><li>category</li><li>foodItem</li><li>isVegan</li><li>isVeganById</li></ul></p>"
 
 ## CATEGORIES ##
 #create
@@ -182,8 +185,19 @@ def remove_foodItem(id:int):
 
 ## IS VEGAN ##
 # read
-@app.route('/isVegan/<int:id>', methods = ['GET'])
-def isVegan(id):
+@app.route('/isVegan/<string:name>', methods = ['GET'])
+def isVegan(name):
+    search = "%"+name+"%"
+    #foodItems = FoodItem.query.filter_by(name=name).all()
+    foodItems = FoodItem.query.filter(FoodItem.name.like(search)).all()
+    if foodItems==[]:
+        return jsonify(message="That food doesn't exist"), 404
+    else:
+        return jsonify({ 'foodItems': [{'id':foodItem.id, 'name':foodItem.name, 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats} for foodItem in foodItems] }), 200
+
+# read
+@app.route('/isVeganById/<int:id>', methods = ['GET'])
+def isVeganById(id):
     foodItem = FoodItem.query.get_or_404(id)
     return jsonify({ 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats }), 200
 
