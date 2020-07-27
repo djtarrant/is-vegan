@@ -48,6 +48,7 @@ class FoodItem(db.Model):
 
     def to_json(self):
         json_fooditem = {
+            'id': self.id,
             'url': url_for('get_foodItem', id = self.id),
             'name': self.name,
             'isVegan': self.isVegan,
