@@ -193,7 +193,7 @@ def isVegan(name):
     if foodItems==[]:
         return jsonify(message="That food doesn't exist"), 404
     else:
-        return jsonify({ 'foodItems': [{'id':foodItem.id, 'name':foodItem.name, 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats} for foodItem in foodItems] }), 200
+        return jsonify({ 'foodItems': [{'id':foodItem.id, 'name':foodItem.name, 'isVegan':foodItem.isVegan, 'caveats':foodItem.caveats, 'categoryId':foodItem.categoryId} for foodItem in foodItems] }), 200
 
 # read
 @app.route('/isVeganById/<int:id>', methods = ['GET'])
