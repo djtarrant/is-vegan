@@ -23,6 +23,7 @@ class Category(db.Model):
 
     def to_json(self):
         json_category = {
+            'id': self.id,
             'url': url_for('get_category', id = self.id),
             'name': self.name,
             # how to get food items? +++ TODO
